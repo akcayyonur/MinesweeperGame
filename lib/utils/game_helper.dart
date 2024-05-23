@@ -1,24 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MinesweeperApp());
-}
-
-class MinesweeperApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Minesweeper',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Minesweeper'),
-        ),
-        body: MinesweeperGame(),
-      ),
-    );
-  }
-}
+import 'package:miinesweeper/ui/screens/main_screen.dart';
 
 class MinesweeperGame extends StatefulWidget {
   @override
@@ -36,6 +18,10 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         totalMines: totalMines,
       );
     });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MainScreen(gameHelper: _currentGame!)),
+    );
   }
 
   @override
@@ -47,27 +33,55 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         children: <Widget>[
           ElevatedButton(
             onPressed: () {
-              _startGame(6, 6, 10); // Beginner level
+              _startGame(8,8, 10); // Beginner level
             },
             child: Text('Beginner'),
           ),
           ElevatedButton(
             onPressed: () {
-              _startGame(8, 8, 20); // Intermediate level
+              _startGame(6, 6, 10); // Intermediate level
             },
             child: Text('Intermediate'),
           ),
           ElevatedButton(
             onPressed: () {
-              _startGame(10, 10, 30); // Expert level
+              _startGame(8, 8, 15); // Expert level
             },
             child: Text('Expert'),
           ),
         ],
       ),
     )
-        : Container(
-      // Render the game UI here using _currentGame instance
+        : GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _currentGame!.columns,
+      ),
+      itemBuilder: (context, index) {
+        final int row = index ~/ _currentGame!.columns;
+        final int col = index % _currentGame!.columns;
+        final Cell cell = _currentGame!.map[row][col];
+        return InkWell(
+          onTap: () {
+            // Handle cell tap here
+            // You can call the corresponding function from MinesweeperGameHelper
+            // based on the tapped cell's position (row, col)
+          },
+          child: Container(
+            margin: EdgeInsets.all(2),
+            color: Colors.grey,
+            child: Center(
+              child: Text(
+                cell.reveal ? cell.content.toString() : '',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      itemCount: _currentGame!.rows * _currentGame!.columns,
     );
   }
 }
@@ -92,18 +106,23 @@ class MinesweeperGameHelper {
 
   void generateMap() {
     placeMines(totalMines);
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < columns; j++) {
-        gameMap.add(map[i][j]);
-      }
-    }
+    gameMap = List<Cell>.generate(
+        rows * columns,
+            (index) {
+          int row = index ~/ columns;
+          int col = index % columns;
+          return map[row][col];
+        });
   }
+
 
   void resetGame() {
     map = List.generate(
-        rows, (x) => List.generate(columns, (y) => Cell(x, y, "", false)));
-    gameMap.clear();
-    generateMap();
+        rows,
+            (x) => List.generate(columns, (y) => Cell(x, y, "", false))
+    );
+    gameMap.clear(); // gameMap'i temizler
+    generateMap(); // Yeni haritayı oluşturur
   }
 
   void placeMines(int minesNumber) {
