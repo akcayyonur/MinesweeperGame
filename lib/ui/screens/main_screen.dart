@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:miinesweeper/utils/game_helper.dart';
 import '../theme/colors.dart';
 
 class MainScreen extends StatefulWidget {
@@ -9,6 +10,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  MinesweeperGame game = MinesweeperGame();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    game.generateMap();
+  }
+
   @override
   Widget build(BuildContext context) {
 //let's store the colors in a seperate file
@@ -23,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
             IconButton(onPressed: () {}, icon: Icon(Icons.settings))
           ]), // AppBar
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -31,7 +41,8 @@ class _MainScreenState extends State<MainScreen> {
               Expanded(
                 child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 10.0),
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 16.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 16.0),
                     decoration: BoxDecoration(
                       color: AppColor.lightPrimaryColor,
                       borderRadius: BorderRadius.circular(8.0),
@@ -55,11 +66,13 @@ class _MainScreenState extends State<MainScreen> {
                       ],
                     )),
               ),
-              SizedBox(width: 10.0), // İki konteyner arasında boşluk bırakmak için
+              SizedBox(width: 10.0),
+              // İki konteyner arasında boşluk bırakmak için
               Expanded(
                 child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 10.0),
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 16.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 16.0),
                     decoration: BoxDecoration(
                       color: AppColor.lightPrimaryColor,
                       borderRadius: BorderRadius.circular(8.0),
@@ -89,7 +102,81 @@ class _MainScreenState extends State<MainScreen> {
             width: double.infinity,
             height: 500.0,
             padding: EdgeInsets.all(20.0),
-          )
+            child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: MinesweeperGame.row,
+                  crossAxisSpacing: 4.0,
+                  mainAxisSpacing: 4.0,
+                ),
+                itemCount: MinesweeperGame.cells,
+                itemBuilder: (BuildContext ctx, index) {
+                  Color cellColor = game.gameMap[index].reveal
+                      ? AppColor.clickedCard
+                      : AppColor.lightPrimaryColor;
+                  return GestureDetector(
+                    onTap: game.gameOver
+                        ? null
+                        : () {
+                            setState(() {
+                              game.getClickedCell(game.gameMap[index]);
+                            });
+                          },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: cellColor,
+                          borderRadius: BorderRadius.circular(6.0)),
+                      child: Center(
+                        child: Text(
+                          game.gameMap[index].reveal
+                              ? "${game.gameMap[index].content}"
+                              : "",
+                          style: TextStyle(
+                            color: game.gameMap[index].reveal
+                                ? game.gameMap[index].content == "X"
+                                    ? Colors.red
+                                    : AppColor.letterColors[
+                                        game.gameMap[index].content]
+                                : Colors.transparent,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+          ),
+          Text(
+            game.gameOver ? "Kaybettiniz" : "",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 32.0),
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          RawMaterialButton(
+            onPressed: () {
+              setState(() {
+                game.resetGame();
+                game.gameOver = false;
+              });
+            },
+            fillColor: AppColor.lightPrimaryColor,
+            elevation: 0,
+            shape: StadiumBorder(),
+            padding: EdgeInsets.symmetric(horizontal: 64.0, vertical: 24.0),
+            child: Text(
+              "Tekrar Deneyin",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(
+            height:20.0,
+          ),
         ],
       ),
     ); // Scaffold
