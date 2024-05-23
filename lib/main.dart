@@ -4,6 +4,7 @@ void main() {
   runApp(const MyApp());
   print("Deneme");
   print("Deneme2677");
+  print("Deneme2677");
 }
 
 class MyApp extends StatelessWidget {
