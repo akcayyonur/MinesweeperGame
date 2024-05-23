@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
   print("Deneme");
-  print("Deneme2");
+  print("Deneme2677");
 }
 
 class MyApp extends StatelessWidget {
