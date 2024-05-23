@@ -6,6 +6,11 @@ class AppColor{
   static Color accentColor = Color(0xff7a9eb8); //flag color
   static Color lightPrimaryColor = Color(0xFF3F3A36);
   static Color clickedCard = Color(0xFF818181);
+
+  static const primaryColorDark = Color(0xFF4E342E);
+
+  static const white = Color(0xFFFFFFFF);
+  static const lightGray = Color(0xFFBDBDBD);
   //Let's add the letter colors list
   static List<Color> letterColors = [
     Colors.white,
