@@ -10,7 +10,7 @@ class MinesweeperGame extends StatefulWidget {
 class _MinesweeperGameState extends State<MinesweeperGame> {
   MinesweeperGameHelper? _currentGame;
 
-  void _startGame(int rows, int columns, int totalMines) {
+  void _startGame(int rows, int columns, int totalMines, ) {
     setState(() {
       _currentGame = MinesweeperGameHelper(
         rows: rows,
@@ -33,19 +33,19 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         children: <Widget>[
           ElevatedButton(
             onPressed: () {
-              _startGame(8,8, 10); // Beginner level
+              _startGame(6,6, 5); // Beginner level
             },
             child: Text('Beginner'),
           ),
           ElevatedButton(
             onPressed: () {
-              _startGame(6, 6, 10); // Intermediate level
+              _startGame(8, 8, 7); // Intermediate level
             },
             child: Text('Intermediate'),
           ),
           ElevatedButton(
             onPressed: () {
-              _startGame(8, 8, 15); // Expert level
+              _startGame(10, 10, 10); // Expert level
             },
             child: Text('Expert'),
           ),
@@ -90,7 +90,9 @@ class MinesweeperGameHelper {
   int rows;
   int columns;
   int totalMines;
+  int remainingFlags;
   bool gameOver = false;
+  bool gameWon = false;
   List<Cell> gameMap = [];
   List<List<Cell>> map = [];
 
@@ -98,9 +100,9 @@ class MinesweeperGameHelper {
     required this.rows,
     required this.columns,
     required this.totalMines,
-  }) {
+  }) : remainingFlags = totalMines {
     map = List.generate(
-        rows, (x) => List.generate(columns, (y) => Cell(x, y, "", false)));
+        rows, (x) => List.generate(columns, (y) => Cell(x, y, "", false, false)));
     generateMap();
   }
 
@@ -115,14 +117,14 @@ class MinesweeperGameHelper {
         });
   }
 
-
   void resetGame() {
     map = List.generate(
-        rows,
-            (x) => List.generate(columns, (y) => Cell(x, y, "", false))
-    );
-    gameMap.clear(); // gameMap'i temizler
-    generateMap(); // Yeni haritayı oluşturur
+        rows, (x) => List.generate(columns, (y) => Cell(x, y, "", false, false)));
+    gameMap.clear();
+    generateMap();
+    gameOver = false;
+    gameWon = false;
+    remainingFlags = totalMines;
   }
 
   void placeMines(int minesNumber) {
@@ -130,7 +132,11 @@ class MinesweeperGameHelper {
     for (int i = 0; i < minesNumber; i++) {
       int mineRow = random.nextInt(rows);
       int mineCol = random.nextInt(columns);
-      map[mineRow][mineCol] = Cell(mineRow, mineCol, "X", false);
+      while (map[mineRow][mineCol].content == "X") {
+        mineRow = random.nextInt(rows);
+        mineCol = random.nextInt(columns);
+      }
+      map[mineRow][mineCol] = Cell(mineRow, mineCol, "X", false, false);
     }
   }
 
@@ -145,6 +151,8 @@ class MinesweeperGameHelper {
   }
 
   void getClickedCell(Cell cell) {
+    if (cell.isFlagged) return;
+
     if (cell.content == "X") {
       showMines();
       gameOver = true;
@@ -166,12 +174,40 @@ class MinesweeperGameHelper {
       if (mineCount == 0) {
         for (int i = max(cellRow - 1, 0); i <= min(cellRow + 1, rows - 1); i++) {
           for (int j = max(cellCol - 1, 0); j <= min(cellCol + 1, columns - 1); j++) {
-            if (map[i][j].content == "") {
+            if (!map[i][j].reveal && !map[i][j].isFlagged) {
               getClickedCell(map[i][j]);
             }
           }
         }
       }
+    }
+  }
+
+  void toggleFlag(Cell cell) {
+    if (cell.reveal) return;
+    if (cell.isFlagged) {
+      cell.isFlagged = false;
+      remainingFlags++;
+    } else if (remainingFlags > 0) {
+      cell.isFlagged = true;
+      remainingFlags--;
+    }
+    checkWinCondition();
+  }
+
+  void checkWinCondition() {
+    bool allMinesFlagged = true;
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < columns; j++) {
+        if (map[i][j].content == "X" && !map[i][j].isFlagged) {
+          allMinesFlagged = false;
+          break;
+        }
+      }
+    }
+    if (allMinesFlagged) {
+      gameWon = true;
+      gameOver = true;
     }
   }
 }
@@ -181,5 +217,6 @@ class Cell {
   int col;
   dynamic content;
   bool reveal = false;
-  Cell(this.row, this.col, this.content, this.reveal);
+  bool isFlagged = false;
+  Cell(this.row, this.col, this.content, this.reveal, this.isFlagged);
 }
