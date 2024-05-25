@@ -10,7 +10,7 @@ class MinesweeperGame extends StatefulWidget {
 class _MinesweeperGameState extends State<MinesweeperGame> {
   MinesweeperGameHelper? _currentGame;
 
-  void _startGame(int rows, int columns, int totalMines, ) {
+  void _startGame(int rows, int columns, int totalMines) {
     setState(() {
       _currentGame = MinesweeperGameHelper(
         rows: rows,
@@ -26,62 +26,90 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
 
   @override
   Widget build(BuildContext context) {
-    return _currentGame == null
-        ? Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              _startGame(6,6, 5); // Beginner level
-            },
-            child: Text('Beginner'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Minesweeper', style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.black,
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/giphy.gif', // Make sure to add your GIF image to the assets folder and update the path
+              fit: BoxFit.cover,
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              _startGame(8, 8, 7); // Intermediate level
-            },
-            child: Text('Intermediate'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _startGame(10, 10, 10); // Expert level
-            },
-            child: Text('Expert'),
+          Center(
+            child: _currentGame == null
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    _startGame(6, 6, 5); // Beginner level
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.black)
+                  ),
+                  child: Text('Beginner', style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _startGame(8, 8, 7); // Intermediate level
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.black)
+                  ),
+                  child: Text('Intermediate', style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _startGame(10, 10, 10); // Expert level
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.black)
+                  ),
+                  child: Text('Expert', style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            )
+                : GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _currentGame!.columns,
+              ),
+              itemBuilder: (context, index) {
+                final int row = index ~/ _currentGame!.columns;
+                final int col = index % _currentGame!.columns;
+                final Cell cell = _currentGame!.map[row][col];
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _currentGame!.getClickedCell(cell);
+                    });
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(2),
+                    color: Colors.grey,
+                    child: Center(
+                      child: Text(
+                        cell.reveal ? cell.content.toString() : '',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _currentGame!.rows * _currentGame!.columns,
+            ),
           ),
         ],
       ),
-    )
-        : GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _currentGame!.columns,
-      ),
-      itemBuilder: (context, index) {
-        final int row = index ~/ _currentGame!.columns;
-        final int col = index % _currentGame!.columns;
-        final Cell cell = _currentGame!.map[row][col];
-        return InkWell(
-          onTap: () {
-            // Handle cell tap here
-            // You can call the corresponding function from MinesweeperGameHelper
-            // based on the tapped cell's position (row, col)
-          },
-          child: Container(
-            margin: EdgeInsets.all(2),
-            color: Colors.grey,
-            child: Center(
-              child: Text(
-                cell.reveal ? cell.content.toString() : '',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      itemCount: _currentGame!.rows * _currentGame!.columns,
     );
   }
 }
