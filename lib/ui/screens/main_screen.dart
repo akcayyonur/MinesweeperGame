@@ -88,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       const Icon(
                         Icons.flag,
-                        color: Colors.blue,
+                        color: Colors.white,
                         size: 34.0,
                       ),
                       Text(
@@ -117,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       const Icon(
                         Icons.timer,
-                        color: Colors.blue,
+                        color: Colors.white,
                         size: 34.0,
                       ),
                       Text(
