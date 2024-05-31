@@ -14,4 +14,7 @@ In this project, we developed a classic Minesweeper game using the Flutter frame
 
 ##  App Preview
 
+![Screenshot_2](https://github.com/Emel-altnts/MinesweeperGame/assets/167646813/3deb5f47-71f7-4897-9740-eccac3a3d3fe)
+![Screenshot_1](https://github.com/Emel-altnts/MinesweeperGame/assets/167646813/5733af0c-4df6-4e14-9e6b-df7c2389a454)
+
 
