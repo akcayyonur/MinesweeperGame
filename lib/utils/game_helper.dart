@@ -35,7 +35,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/giphy.gif', // Make sure to add your GIF image to the assets folder and update the path
+              'assets/giphy.gif', 
               fit: BoxFit.cover,
             ),
           ),
