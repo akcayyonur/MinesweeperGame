@@ -21,10 +21,11 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     gameHelper = widget.gameHelper;
-    gameHelper.generateMap();
-    _startStopwatch();
+    gameHelper.generateMap();//generate game map
+    _startStopwatch();//start the stopwatch when game starts
   }
 
+  //function to start the stopwatch
   void _startStopwatch() {
     _stopwatch.start();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -32,18 +33,20 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  //function to stop the stopwatch
   void _stopStopwatch() {
     _stopwatch.stop();
     _timer?.cancel();
   }
 
+  //function to format the time as minutes:seconds
   String _formattedTime() {
     final duration = _stopwatch.elapsed;
     final minutes = duration.inMinutes.toString().padLeft(2, '0');
     final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
-
+  //function to check if the player has won the game
   void _checkWinCondition() {
     if (gameHelper.gameWon) {
       _stopStopwatch();
@@ -52,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    _stopStopwatch();
+    _stopStopwatch();//stop the watch when the widget is disposed
     super.dispose();
   }
 
@@ -146,10 +149,12 @@ class _MainScreenState extends State<MainScreen> {
               ),
               itemCount: gameHelper.gameMap.length,
               itemBuilder: (BuildContext ctx, index) {
+                //determine the color of the cell based on its state
                 Color cellColor = gameHelper.gameMap[index].reveal
                     ? AppColor.clickedCard
                     : AppColor.lightPrimaryColor;
                 return GestureDetector(
+                  //handle tap on cell
                   onTap: gameHelper.gameOver
                       ? null
                       : () {
@@ -157,17 +162,18 @@ class _MainScreenState extends State<MainScreen> {
                       gameHelper.getClickedCell(gameHelper.gameMap[index]);
                       if (gameHelper.gameMap[index].content == "X") {
                         gameHelper.gameOver = true;
-                        _stopStopwatch();
+                        _stopStopwatch();//stop the watch if the game is over
                       }
-                      _checkWinCondition();
+                      _checkWinCondition();//check if the game is over
                     });
                   },
+                  //handle long press to toggle flag on a cell
                   onLongPress: gameHelper.gameOver
                       ? null
                       : () {
                     setState(() {
                       gameHelper.toggleFlag(gameHelper.gameMap[index]);
-                      _checkWinCondition();
+                      _checkWinCondition();//check if the game is won
                     });
                   },
                   child: Container(
@@ -201,9 +207,10 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
           ),
+          //display game status
           Text(
             gameHelper.gameOver
-                ? (gameHelper.gameWon ? "Kazandınız!" : "Kaybettiniz")
+                ? (gameHelper.gameWon ? "You Won!" : "You Lost")
                 : "",
             style: TextStyle(
                 color: Colors.white,
@@ -213,12 +220,13 @@ class _MainScreenState extends State<MainScreen> {
           SizedBox(
             height: 20.0,
           ),
+          //button to restart the game
           RawMaterialButton(
             onPressed: () {
               setState(() {
                 gameHelper.resetGame();
-                _stopwatch.reset();
-                _startStopwatch();
+                _stopwatch.reset();//reset the stopwatch
+                _startStopwatch();//restart the stopwatch
               });
             },
             fillColor: AppColor.lightPrimaryColor,
@@ -226,7 +234,7 @@ class _MainScreenState extends State<MainScreen> {
             shape: StadiumBorder(),
             padding: EdgeInsets.symmetric(horizontal: 64.0, vertical: 24.0),
             child: Text(
-              "Tekrar Deneyin",
+              "Try again",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 24.0,

@@ -10,6 +10,7 @@ class MinesweeperGame extends StatefulWidget {
 class _MinesweeperGameState extends State<MinesweeperGame> {
   MinesweeperGameHelper? _currentGame;
 
+  //Function to start the game
   void _startGame(int rows, int columns, int totalMines) {
     setState(() {
       _currentGame = MinesweeperGameHelper(
@@ -18,6 +19,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         totalMines: totalMines,
       );
     });
+    //When clicked, navigate to the main screen
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainScreen(gameHelper: _currentGame!)),
@@ -35,7 +37,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/giphy.gif', // Make sure to add your GIF image to the assets folder and update the path
+              'assets/giphy.gif',
               fit: BoxFit.cover,
             ),
           ),
@@ -44,6 +46,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
                 ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                //button to start an beginner game
                 ElevatedButton(
                   onPressed: () {
                     _startGame(6, 6, 5); // Beginner level
@@ -54,6 +57,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
                   child: Text('Beginner', style: TextStyle(color: Colors.white),
                   ),
                 ),
+                //button to start an intermediate game
                 ElevatedButton(
                   onPressed: () {
                     _startGame(8, 8, 7); // Intermediate level
@@ -64,6 +68,7 @@ class _MinesweeperGameState extends State<MinesweeperGame> {
                   child: Text('Intermediate', style: TextStyle(color: Colors.white),
                   ),
                 ),
+                //button to start an expert game
                 ElevatedButton(
                   onPressed: () {
                     _startGame(10, 10, 10); // Expert level
@@ -124,6 +129,7 @@ class MinesweeperGameHelper {
   List<Cell> gameMap = [];
   List<List<Cell>> map = [];
 
+  //constructor that initializes the game map and place minea
   MinesweeperGameHelper({
     required this.rows,
     required this.columns,
@@ -134,6 +140,7 @@ class MinesweeperGameHelper {
     generateMap();
   }
 
+  //generates the game map and places mines
   void generateMap() {
     placeMines(totalMines);
     gameMap = List<Cell>.generate(
@@ -145,6 +152,7 @@ class MinesweeperGameHelper {
         });
   }
 
+  //resets the game
   void resetGame() {
     map = List.generate(
         rows, (x) => List.generate(columns, (y) => Cell(x, y, "", false, false)));
@@ -155,6 +163,7 @@ class MinesweeperGameHelper {
     remainingFlags = totalMines;
   }
 
+  //places mines randomly on the map
   void placeMines(int minesNumber) {
     Random random = Random();
     for (int i = 0; i < minesNumber; i++) {
@@ -168,6 +177,7 @@ class MinesweeperGameHelper {
     }
   }
 
+  //show all mines on the map
   void showMines() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
@@ -178,6 +188,7 @@ class MinesweeperGameHelper {
     }
   }
 
+  //handles the logic when a cell is clicked
   void getClickedCell(Cell cell) {
     if (cell.isFlagged) return;
 
@@ -211,6 +222,7 @@ class MinesweeperGameHelper {
     }
   }
 
+  //toggles the flag status of a cell
   void toggleFlag(Cell cell) {
     if (cell.reveal) return;
     if (cell.isFlagged) {
@@ -223,6 +235,7 @@ class MinesweeperGameHelper {
     checkWinCondition();
   }
 
+  //checks if the player has won the game
   void checkWinCondition() {
     bool allMinesFlagged = true;
     for (int i = 0; i < rows; i++) {
@@ -246,5 +259,7 @@ class Cell {
   dynamic content;
   bool reveal = false;
   bool isFlagged = false;
+
+  //cell instructor
   Cell(this.row, this.col, this.content, this.reveal, this.isFlagged);
 }
